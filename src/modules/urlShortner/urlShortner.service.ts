@@ -11,28 +11,31 @@ class UrlShortnerService {
       await db.beginTransaction();
       // Take the Url from input
       const id = await urlShortnerRepository.checkUrlExists(url, db);
+      let shortCode: string;
+
       if (id) {
         // Update expiry if already exists
         const result = await urlShortnerRepository.updateUrlExpiry(url, db);
         if (!result) throw new Error("Update expiry failed");
         // Get the short code
-        const shortCode = await urlShortnerRepository.checkShortUrl(id, db);
-        return `localhost:2000/${shortCode}`;
+        shortCode = await urlShortnerRepository.checkShortUrl(id, db);
       } else {
         // Insert if not already exists
-        const id = await urlShortnerRepository.insertUrl(url, db);
+        const newId = await urlShortnerRepository.insertUrl(url, db);
         // Hash the Url insert key
-        const shortCode = encodeBase62(id);
+        shortCode = encodeBase62(newId);
 
         // update the short_code
         const updated = await urlShortnerRepository.updateShortCode(
           shortCode,
-          id,
+          newId,
           db,
         );
         if (!updated) throw new Error("Update short code failed");
-        return `localhost:2000/${shortCode}`;
       }
+
+      await db.commit();
+      return `localhost:2000/${shortCode}`;
     } catch (error) {
       console.error("DB call failed", error);
       await db.rollback();
