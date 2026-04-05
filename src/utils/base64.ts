@@ -4,7 +4,7 @@
  */
 export function encodeBase62(num: number | bigint): string {
   const chars =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let n = BigInt(num);
 
   if (n === 0n) return chars[0]!;
@@ -23,7 +23,7 @@ export function encodeBase62(num: number | bigint): string {
  */
 export function decodeBase62(str: string): bigint {
   const chars =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let result = 0n;
 
   for (const char of str) {
