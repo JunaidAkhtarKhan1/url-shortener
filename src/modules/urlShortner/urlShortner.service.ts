@@ -1,7 +1,7 @@
 class UrlShortnerService {
-  async createShortUrl() {
-    console.log("create URL");
-    return true;
+  async createShortUrl(url: string): Promise<string> {
+    //Take the Url from input
+    return "true";
   }
   async readShortUrl() {
     console.log("get URL");

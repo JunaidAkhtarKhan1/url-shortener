@@ -7,8 +7,8 @@ export async function createUrl(
   next: NextFunction,
 ) {
   try {
-    const result = await urlShortnerService.createShortUrl();
-    throw new Error("Failed to call api");
+    const url = req.body.url;
+    const result = await urlShortnerService.createShortUrl(url);
     return res.status(201).json({ success: true, result });
   } catch (error) {
     next(error);
