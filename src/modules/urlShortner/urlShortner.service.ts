@@ -1,16 +1,13 @@
 import { requireEnv } from "../../config/env.config.js";
 import pool from "../../database/pool.js";
 import ApiError from "../../utils/apiError.js";
-import { encodeBase62 } from "../../utils/base64.js";
+import { encodeBase62, withTransaction } from "../../utils/base64.js";
 import urlShortnerRepository from "./urlShortner.repository.js";
 
 class UrlShortnerService {
   async createShortUrl(url: string): Promise<string> {
     if (!url) throw new ApiError(400, "Url is required");
-    const db = await pool.getConnection();
-    try {
-      // Initiate Transaction
-      await db.beginTransaction();
+    return await withTransaction(async (db) => {
       // Take the Url from input
       const id = await urlShortnerRepository.checkUrlExists(url, db);
       let shortCode: string;
@@ -35,16 +32,8 @@ class UrlShortnerService {
         );
         if (!updated) throw new ApiError(500, "Update short url failed");
       }
-
-      await db.commit();
       return `${requireEnv("BASE_URL")}/${shortCode}`;
-    } catch (error) {
-      console.error("DB call failed", error);
-      await db.rollback();
-      throw error;
-    } finally {
-      db.release();
-    }
+    });
   }
   async readShortUrl(code: string | undefined): Promise<string> {
     // Check if short_code exists in DB and not expired yet

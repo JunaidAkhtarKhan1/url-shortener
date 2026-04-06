@@ -6,13 +6,13 @@ class UrlShortnerRepository {
   async checkUrlExists(
     originalUrl: string,
     conn?: PoolConnection,
-  ): Promise<number> {
+  ): Promise<number | null> {
     const db = conn || pool;
     const [result] = await db.query<RowDataPacket[]>(
       "SELECT id FROM urls WHERE original_url = ?",
       originalUrl,
     );
-    return result.length > 0 ? result[0]!.id : 0;
+    return result[0] ? result[0].id : null;
   }
   async checkShortUrl(id: number, conn?: PoolConnection): Promise<string> {
     const db = conn || pool;
