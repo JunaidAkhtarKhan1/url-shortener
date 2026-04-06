@@ -1,8 +1,8 @@
 import { requireEnv } from "../../config/env.config.js";
-import pool from "../../database/pool.js";
 import ApiError from "../../utils/apiError.js";
 import { encodeBase62, withTransaction } from "../../utils/base64.js";
 import urlShortnerRepository from "./urlShortner.repository.js";
+import { redis, redisAvailable } from "../../config/redis.config.js";
 
 class UrlShortnerService {
   async createShortUrl(url: string): Promise<string> {
@@ -38,7 +38,16 @@ class UrlShortnerService {
   async readShortUrl(code: string | undefined): Promise<string> {
     // Check if short_code exists in DB and not expired yet
     if (!code) throw new ApiError(400, "url param is not defined");
-    return await urlShortnerRepository.checkShortUrlWithExpiry(code);
+
+    if (redisAvailable) {
+      const cached = await redis.get(code);
+      if (cached) {
+        return cached;
+      }
+    }
+    const result = await urlShortnerRepository.checkShortUrlWithExpiry(code);
+    if (redisAvailable) await redis.setEx(code, 60 * 15, result);
+    return result;
   }
 }
 

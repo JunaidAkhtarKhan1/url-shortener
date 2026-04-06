@@ -67,7 +67,7 @@ class UrlShortnerRepository {
   ): Promise<string> {
     const db = conn || pool;
     const [result] = await db.query<RowDataPacket[]>(
-      `SELECT id, original_url FROM urls 
+      `SELECT original_url FROM urls 
       WHERE short_code = ? AND expires_at > CURRENT_TIMESTAMP`,
       code,
     );
