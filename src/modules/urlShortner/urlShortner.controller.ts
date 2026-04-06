@@ -16,10 +16,10 @@ export async function createUrl(
 }
 
 export async function getUrl(req: Request, res: Response, next: NextFunction) {
-  //Call service
   try {
-    const result = await urlShortnerService.readShortUrl();
-    return res.status(200).json({ success: true, result });
+    const code = String(req.params.code);
+    const result = await urlShortnerService.readShortUrl(code);
+    return res.status(301).redirect(result);
   } catch (error) {
     next(error);
   }

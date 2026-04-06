@@ -6,6 +6,6 @@ import { urlSchema } from "./urlShortner.validate";
 const router = Router();
 
 router.post("/shorten", validateRequest(urlSchema), createUrl);
-router.get("/", getUrl);
+router.get("/:code", getUrl);
 
 export default router;
