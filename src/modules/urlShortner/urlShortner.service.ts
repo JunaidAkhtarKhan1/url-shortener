@@ -45,10 +45,10 @@ class UrlShortnerService {
       db.release();
     }
   }
-  async readShortUrl() {
-    console.log("get URL");
-    console.log(encodeBase62(0));
-    return true;
+  async readShortUrl(code: string | undefined): Promise<string> {
+    // Check if short_code exists in DB and not expired yet
+    if (!code) throw new Error("url param is not defined");
+    return await urlShortnerRepository.checkShortUrlWithExpiry(code);
   }
 }
 

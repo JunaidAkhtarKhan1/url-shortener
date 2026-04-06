@@ -59,6 +59,20 @@ class UrlShortnerRepository {
     );
     return result.affectedRows ? true : false;
   }
+
+  async checkShortUrlWithExpiry(
+    code: string,
+    conn?: PoolConnection,
+  ): Promise<string> {
+    const db = conn || pool;
+    const [result] = await db.query<RowDataPacket[]>(
+      `SELECT id, original_url FROM urls 
+      WHERE short_code = ? AND expires_at > CURRENT_TIMESTAMP`,
+      code,
+    );
+    if (result[0] === undefined) throw new Error("Url not found");
+    return result[0].original_url;
+  }
 }
 
 export default new UrlShortnerRepository();
