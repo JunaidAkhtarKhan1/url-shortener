@@ -1,3 +1,4 @@
+import { requireEnv } from "../../config/env.config";
 import pool from "../../database/pool";
 import { encodeBase62 } from "../../utils/base64";
 import urlShortnerRepository from "./urlShortner.repository";
@@ -35,7 +36,7 @@ class UrlShortnerService {
       }
 
       await db.commit();
-      return `localhost:2000/${shortCode}`;
+      return `${requireEnv("BASE_URL")}/${shortCode}`;
     } catch (error) {
       console.error("DB call failed", error);
       await db.rollback();
