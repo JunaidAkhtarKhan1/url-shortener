@@ -1,11 +1,12 @@
-import { requireEnv } from "../../config/env.config";
-import pool from "../../database/pool";
-import { encodeBase62 } from "../../utils/base64";
-import urlShortnerRepository from "./urlShortner.repository";
+import { requireEnv } from "../../config/env.config.js";
+import pool from "../../database/pool.js";
+import ApiError from "../../utils/apiError.js";
+import { encodeBase62 } from "../../utils/base64.js";
+import urlShortnerRepository from "./urlShortner.repository.js";
 
 class UrlShortnerService {
   async createShortUrl(url: string): Promise<string> {
-    if (!url) throw new Error("Url is required");
+    if (!url) throw new ApiError(400, "Url is required");
     const db = await pool.getConnection();
     try {
       // Initiate Transaction
@@ -17,7 +18,7 @@ class UrlShortnerService {
       if (id) {
         // Update expiry if already exists
         const result = await urlShortnerRepository.updateUrlExpiry(url, db);
-        if (!result) throw new Error("Update expiry failed");
+        if (!result) throw new ApiError(500, "Update expiry failed");
         // Get the short code
         shortCode = await urlShortnerRepository.checkShortUrl(id, db);
       } else {
@@ -32,7 +33,7 @@ class UrlShortnerService {
           newId,
           db,
         );
-        if (!updated) throw new Error("Update short code failed");
+        if (!updated) throw new ApiError(500, "Update short url failed");
       }
 
       await db.commit();
@@ -40,14 +41,14 @@ class UrlShortnerService {
     } catch (error) {
       console.error("DB call failed", error);
       await db.rollback();
-      throw new Error("DB call failed");
+      throw error;
     } finally {
       db.release();
     }
   }
   async readShortUrl(code: string | undefined): Promise<string> {
     // Check if short_code exists in DB and not expired yet
-    if (!code) throw new Error("url param is not defined");
+    if (!code) throw new ApiError(400, "url param is not defined");
     return await urlShortnerRepository.checkShortUrlWithExpiry(code);
   }
 }

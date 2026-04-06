@@ -1,7 +1,7 @@
-import app from "./app";
+import app from "./app.js";
 import dotenv from "dotenv";
-import { requireEnv } from "./config/env.config";
-import { initDB } from "./database";
+import { requireEnv } from "./config/env.config.js";
+import { initDB } from "./database/index.js";
 dotenv.config();
 
 const PORT = requireEnv("PORT");

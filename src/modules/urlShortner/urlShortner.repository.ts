@@ -1,5 +1,6 @@
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import pool from "../../database/pool";
+import pool from "../../database/pool.js";
+import ApiError from "../../utils/apiError.js";
 
 class UrlShortnerRepository {
   async checkUrlExists(
@@ -19,7 +20,7 @@ class UrlShortnerRepository {
       "SELECT short_code FROM urls WHERE id = ?",
       id,
     );
-    if (result[0] === undefined) throw new Error("short url not found");
+    if (result[0] === undefined) throw new ApiError(404, "short url not found");
     return result[0].short_code;
   }
 
@@ -70,7 +71,7 @@ class UrlShortnerRepository {
       WHERE short_code = ? AND expires_at > CURRENT_TIMESTAMP`,
       code,
     );
-    if (result[0] === undefined) throw new Error("Url not found");
+    if (result[0] === undefined) throw new ApiError(404, "Url not found");
     return result[0].original_url;
   }
 }

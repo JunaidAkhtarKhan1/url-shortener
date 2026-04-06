@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import cors from "cors";
-import urlShortnerRoute from "./modules/urlShortner/urlShortner.route";
-import errorHandler from "./middleware/error.middleware";
+import urlShortnerRoute from "./modules/urlShortner/urlShortner.route.js";
+import errorHandler from "./middleware/error.middleware.js";
 
 const app: Application = express();
 

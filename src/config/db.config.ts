@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { requireEnv } from "./env.config";
+import { requireEnv } from "./env.config.js";
 dotenv.config();
 
 export default {

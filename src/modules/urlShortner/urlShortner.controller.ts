@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import urlShortnerService from "./urlShortner.service";
+import urlShortnerService from "./urlShortner.service.js";
 
 export async function createUrl(
   req: Request,
